@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>PANN STATION — PPSSPP UI Replica</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+</head>
+<body>
+
+<!-- ═══ SPLASH SCREEN ═══ -->
+<div class="splash" id="splash">
+  <div class="splash-logo">
+    <div class="splash-icon">⚡</div>
+    <div class="splash-title">PANN STATION</div>
+    <div class="splash-sub">PSP Emulator — UI Replica</div>
+  </div>
+  <div class="splash-loading">
+    <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+    <div class="splash-text" id="splash-text">Loading...</div>
+  </div>
+  <div class="splash-version">v3.0 · PANN</div>
+</div>
+
+<!-- ═══ MAIN APP ═══ -->
+<div class="app" id="app">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="topbar-btn" id="btn-back">← Back</button>
+    </div>
+    <div class="topbar-title" id="topbar-title">PANN STATION</div>
+    <div class="topbar-right">
+      <button class="topbar-btn" id="btn-menu">☰</button>
+    </div>
+  </header>
+
+  <!-- ═══ SCREEN: HOME ═══ -->
+  <section class="screen active" id="screen-home">
+    <div class="home-grid">
+      <button class="home-tile" data-screen="games">
+        <div class="home-tile-icon">🎮</div>
+        <div class="home-tile-label">Games</div>
+        <div class="home-tile-sub">Game library kamu</div>
+      </button>
+      <button class="home-tile" data-screen="recent">
+        <div class="home-tile-icon">🕐</div>
+        <div class="home-tile-label">Recent</div>
+        <div class="home-tile-sub">Baru dimainkan</div>
+      </button>
+      <button class="home-tile" data-screen="settings">
+        <div class="home-tile-icon">⚙️</div>
+        <div class="home-tile-label">Settings</div>
+        <div class="home-tile-sub">Konfigurasi emulator</div>
+      </button>
+      <button class="home-tile" data-screen="cheats">
+        <div class="home-tile-icon">⚡</div>
+        <div class="home-tile-label">Cheats</div>
+        <div class="home-tile-sub">Cheat panel</div>
+      </button>
+      <button class="home-tile" data-screen="homebrew">
+        <div class="home-tile-icon">🧪</div>
+        <div class="home-tile-label">Homebrew</div>
+        <div class="home-tile-sub">Game homebrew gratis</div>
+      </button>
+      <button class="home-tile" data-screen="about">
+        <div class="home-tile-icon">ℹ️</div>
+        <div class="home-tile-label">About</div>
+        <div class="home-tile-sub">Info &amp; kredit</div>
+      </button>
+    </div>
+
+    <div class="home-footer">
+      <div class="home-footer-item">
+        <span class="home-footer-label">Developer</span>
+        <span class="home-footer-value">PANN</span>
+      </div>
+      <div class="home-footer-item">
+        <span class="home-footer-label">Core</span>
+        <span class="home-footer-value">PPSSPP-WASM</span>
+      </div>
+      <div class="home-footer-item">
+        <span class="home-footer-label">Status</span>
+        <span class="home-footer-value" id="home-status">Ready</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SCREEN: GAMES ═══ -->
+  <section class="screen" id="screen-games">
+    <div class="section-toolbar">
+      <button class="btn-primary" id="btn-upload-iso">📤 Upload ISO/CSO</button>
+      <button class="btn-secondary" id="btn-add-url">🔗 Tambah URL</button>
+    </div>
+
+    <div class="game-grid" id="game-grid">
+      <div class="empty-state">
+        <div class="empty-icon">🎮</div>
+        <div class="empty-title">Belum ada game</div>
+        <div class="empty-desc">Upload ISO/CSO atau tambah dari URL</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SCREEN: RECENT ═══ -->
+  <section class="screen" id="screen-recent">
+    <div class="game-grid" id="recent-grid">
+      <div class="empty-state">
+        <div class="empty-icon">🕐</div>
+        <div class="empty-title">Belum ada history</div>
+        <div class="empty-desc">Main game dulu</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SCREEN: EMULATOR ═══ -->
+  <section class="screen" id="screen-emulator">
+    <div class="emu-container">
+      <div id="emu-view"></div>
+      <div class="emu-placeholder" id="emu-placeholder">
+        <div class="placeholder-icon">🎮</div>
+        <div class="placeholder-title">No game loaded</div>
+        <div class="placeholder-desc">Pilih game dari library</div>
+      </div>
+    </div>
+
+    <!-- EMULATOR TOOLBAR (overlay) -->
+    <div class="emu-overlay" id="emu-overlay">
+      <button class="emu-btn" id="emu-back">←</button>
+      <div class="emu-title" id="emu-title">-</div>
+      <div class="emu-actions">
+        <button class="emu-btn" id="emu-pause">⏸</button>
+        <button class="emu-btn" id="emu-save">💾</button>
+        <button class="emu-btn" id="emu-load">📂</button>
+        <button class="emu-btn" id="emu-fullscreen">⛶</button>
+      </div>
+    </div>
+
+    <!-- TOUCH CONTROLS (PPSSPP style) -->
+    <div class="touch-controls" id="touch-controls">
+      <div class="tc-side tc-left">
+        <div class="dpad">
+          <button class="dpad-btn dpad-up" data-key="up">▲</button>
+          <button class="dpad-btn dpad-left" data-key="left">◀</button>
+          <button class="dpad-btn dpad-right" data-key="right">▶</button>
+          <button class="dpad-btn dpad-down" data-key="down">▼</button>
+        </div>
+        <div class="analog">
+          <div class="analog-base">
+            <div class="analog-stick" id="analog-stick"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tc-side tc-right">
+        <div class="face-buttons">
+          <button class="face-btn face-triangle" data-key="triangle">△</button>
+          <button class="face-btn face-circle" data-key="circle">○</button>
+          <button class="face-btn face-cross" data-key="cross">✕</button>
+          <button class="face-btn face-square" data-key="square">□</button>
+        </div>
+        <div class="shoulder-row">
+          <button class="shoulder-btn" data-key="l">L</button>
+          <button class="shoulder-btn" data-key="r">R</button>
+        </div>
+        <div class="system-row">
+          <button class="system-btn" data-key="start">START</button>
+          <button class="system-btn" data-key="select">SELECT</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAUSE MENU -->
+    <div class="pause-menu" id="pause-menu">
+      <div class="pause-box">
+        <div class="pause-title">PAUSED</div>
+        <button class="pause-btn" id="pause-resume">▶ Resume</button>
+        <button class="pause-btn" id="pause-savestate">💾 Save State</button>
+        <button class="pause-btn" id="pause-loadstate">📂 Load State</button>
+        <button class="pause-btn" id="pause-cheats">⚡ Cheats</button>
+        <button class="pause-btn" id="pause-settings">⚙️ Settings</button>
+        <button class="pause-btn pause-exit" id="pause-exit">🚪 Exit Game</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SCREEN: SETTINGS ═══ -->
+  <section class="screen" id="screen-settings">
+    <div class="settings-tabs">
+      <button class="set-tab active" data-set="graphics">Graphics</button>
+      <button class="set-tab" data-set="audio">Audio</button>
+      <button class="set-tab" data-set="controls">Controls</button>
+      <button class="set-tab" data-set="system">System</button>
+      <button class="set-tab" data-set="network">Network</button>
+    </div>
+
+    <!-- Graphics -->
+    <div class="set-panel active" id="set-graphics">
+      <div class="set-item">
+        <label>Backend</label>
+        <select id="set-backend">
+          <option value="webgl2">WebGL 2 (Recommended)</option>
+          <option value="webgl">WebGL</option>
+          <option value="canvas">Canvas (Slow)</option>
+        </select>
+      </div>
+      <div class="set-item">
+        <label>Resolution Scale</label>
+        <select id="set-res">
+          <option value="1">1x (Native)</option>
+          <option value="2" selected>2x (HD)</option>
+          <option value="3">3x (Full HD)</option>
+          <option value="4">4x (4K)</option>
+        </select>
+      </div>
+      <div class="set-item">
+        <label>Frame Skip</label>
+        <select id="set-frameskip">
+          <option value="0">0 (Off)</option>
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5 (Max)</option>
+        </select>
+      </div>
+      <div class="set-item">
+        <label>Texture Filter</label>
+        <select id="set-filter">
+          <option value="nearest">Nearest</option>
+          <option value="linear" selected>Linear</option>
+          <option value="bilinear">Bilinear</option>
+        </select>
+      </div>
+      <div class="set-item">
+        <label>Anisotropic Filtering</label>
+        <select id="set-aniso">
+          <option value="0">Off</option>
+          <option value="2">2x</option>
+          <option value="4" selected>4x</option>
+          <option value="8">8x</option>
+          <option value="16">16x</option>
+        </select>
+      </div>
+      <div class="set-item set-toggle">
+        <label>VSync</label>
+        <input type="checkbox" id="set-vsync" checked>
+      </div>
+      <div class="set-item set-toggle">
+        <label>Show FPS Counter</label>
+        <input type="checkbox" id="set-showfps" checked>
+      </div>
+    </div>
+
+    <!-- Audio -->
+    <div class="set-panel" id="set-audio">
+      <div class="set-item">
+        <label>Audio Backend</label>
+        <select id="set-audiobackend">
+          <option value="auto" selected>Auto</option>
+          <option value="webAudio">Web Audio API</option>
+          <option value="webaudio">WebAudio (legacy)</option>
+        </select>
+      </div>
+      <div class="set-item">
+        <label>Volume</label>
+        <input type="range" id="set-volume" min="0" max="100" value="80">
+        <span class="set-value" id="set-volume-val">80%</span>
+      </div>
+      <div class="set-item set-toggle">
+        <label>Enable Audio</label>
+        <input type="checkbox" id="set-audioen" checked>
+      </div>
+      <div class="set-item set-toggle">
+        <label>Audio Latency (Low)</label>
+        <input type="checkbox" id="set-audiolowlatency">
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="set-panel" id="set-controls">
+      <div class="set-item set-toggle">
+        <label>On-screen Touch Controls</label>
+        <input type="checkbox" id="set-touch" checked>
+      </div>
+      <div class="set-item set-toggle">
+        <label>Vibrate on Press</label>
+        <input type="checkbox" id="set-vibrate">
+      </div>
+      <div class="set-item set-toggle">
+        <label>Gamepad Support</label>
+        <input type="checkbox" id="set-gamepad" checked>
+      </div>
+      <div class="set-item">
+        <label>Controller Layout</label>
+        <select id="set-layout">
+          <option value="default" selected>Default (PPSSPP)</option>
+          <option value="compact">Compact</option>
+          <option value="minimal">Minimal</option>
+        </select>
+      </div>
+      <div class="set-item">
+        <label>Analog Sensitivity</label>
+        <input type="range" id="set-analog" min="1" max="10" value="5">
+        <span class="set-value" id="set-analog-val">5</span>
+      </div>
+    </div>
+
+    <!-- System -->
+    <div class="set-panel" id="set-system">
+      <div class="set-item">
+        <label>Language</label>
+        <select id="set-lang">
+          <option value="id" selected>Indonesia</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <div class="set-item set-toggle">
+        <label>Auto-save State</label>
+        <input type="checkbox" id="set-autosave">
+      </div>
+      <div class="set-item">
+        <label>Save State Slot</label>
+        <select id="set-slot">
+          <option value="1" selected>Slot 1</option>
+          <option value="2">Slot 2</option>
+          <option value="3">Slot 3</option>
+          <option value="4">Slot 4</option>
+        </select>
+      </div>
+      <div class="set-item">
+        <label>Memory Stick Size</label>
+        <select id="set-memstick">
+          <option value="32">32 MB</option>
+          <option value="64" selected>64 MB</option>
+          <option value="128">128 MB</option>
+          <option value="256">256 MB</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Network -->
+    <div class="set-panel" id="set-network">
+      <div class="set-item set-toggle">
+        <label>Enable Networking</label>
+        <input type="checkbox" id="set-net">
+      </div>
+      <div class="set-item">
+        <label>Ad-hoc Server</label>
+        <select id="set-adhoc">
+          <option value="off" selected>Off</option>
+          <option value="local">Local</option>
+          <option value="online">Online</option>
+        </select>
+      </div>
+      <div class="set-item set-toggle">
+        <label>Upnp</label>
+        <input type="checkbox" id="set-upnp">
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btn-save-settings" style="margin-top:16px">💾 Simpan Settings</button>
+  </section>
+
+  <!-- ═══ SCREEN: CHEATS ═══ -->
+  <section class="screen" id="screen-cheats">
+    <div class="cheat-tabs">
+      <button class="cheat-tab active" data-cheat-tab="quick">Quick</button>
+      <button class="cheat-tab" data-cheat-tab="custom">Custom</button>
+      <button class="cheat-tab" data-cheat-tab="import">Import</button>
+      <button class="cheat-tab" data-cheat-tab="active">Active</button>
+    </div>
+
+    <!-- Quick -->
+    <div class="cheat-panel active" id="cheat-quick">
+      <div class="cheat-grid" id="cheat-grid"></div>
+    </div>
+
+    <!-- Custom -->
+    <div class="cheat-panel" id="cheat-custom">
+      <div class="form-group">
+        <label>Nama Cheat</label>
+        <input type="text" id="cheat-name" placeholder="contoh: Infinite Money">
+      </div>
+      <div class="form-group">
+        <label>Kode (CWCheat)</label>
+        <textarea id="cheat-code" placeholder="_C0 Infinite Money&#10;_L 0x20243C38 0x000F423F"></textarea>
+      </div>
+      <button class="btn-primary" id="btn-add-cheat">➕ Tambah Cheat</button>
+    </div>
+
+    <!-- Import -->
+    <div class="cheat-panel" id="cheat-import">
+      <div class="upload-small" id="cheat-upload">
+        <input type="file" id="cheat-input" accept=".ini,.cht,.txt" hidden>
+        <div class="upload-icon">📎</div>
+        <div class="upload-text">Tap untuk pilih file .ini / .cht</div>
+        <div class="upload-sub">Format CWCheat</div>
+      </div>
+    </div>
+
+    <!-- Active -->
+    <div class="cheat-panel" id="cheat-active">
+      <div class="cheat-active-list" id="cheat-active-list">
+        <div class="empty-state">Belum ada cheat aktif.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SCREEN: HOMEBREW ═══ -->
+  <section class="screen" id="screen-homebrew">
+    <div class="info-card">
+      <div class="info-icon">🧪</div>
+      <div class="info-text">
+        <strong>Homebrew PSP</strong> adalah game gratis & open-source buat PSP.
+        Legal, aman, dan bisa dimainkan langsung di PANN STATION.
+      </div>
+    </div>
+
+    <div class="homebrew-grid" id="homebrew-grid">
+      <!-- Rendered by JS -->
+    </div>
+  </section>
+
+  <!-- ═══ SCREEN: ABOUT ═══ -->
+  <section class="screen" id="screen-about">
+    <div class="about-hero">
+      <div class="about-icon">⚡</div>
+      <h2>PANN STATION</h2>
+      <p class="about-version">v3.0 · PPSSPP UI Replica</p>
+    </div>
+
+    <div class="about-info-list">
+      <div class="about-row">
+        <span class="about-label">Developer</span>
+        <span class="about-value">PANN</span>
+      </div>
+      <div class="about-row">
+        <span class="about-label">Core Emulator</span>
+        <span class="about-value">PPSSPP (WebAssembly)</span>
+      </div>
+      <div class="about-row">
+        <span class="about-label">Frontend</span>
+        <span class="about-value">EmulatorJS</span>
+      </div>
+      <div class="about-row">
+        <span class="about-label">Platform</span>
+        <span class="about-value">Web (100% Client-Side)</span>
+      </div>
+      <div class="about-row">
+        <span class="about-label">Server</span>
+        <span class="about-value">None</span>
+      </div>
+      <div class="about-row">
+        <span class="about-label">Lisensi Core</span>
+        <span class="about-value">GPL v2+</span>
+      </div>
+    </div>
+
+    <div class="about-note">
+      PANN STATION tidak menyediakan ROM game. Semua game di-upload oleh user.
+      Developer tidak bertanggung jawab atas konten yang di-upload user.
+      PPSSPP dikembangkan oleh Henrik Rydgård dan komunitas.
+    </div>
+
+    <div class="about-links">
+      <a href="https://www.ppsspp.org/" target="_blank" rel="noopener">🌐 PPSSPP Official</a>
+      <a href="https://github.com/hrydgard/ppsspp" target="_blank" rel="noopener">📦 PPSSPP GitHub</a>
+      <a href="https://www.emulatorjs.org/" target="_blank" rel="noopener">🎮 EmulatorJS</a>
+      <a href="https://play.google.com/store/apps/details?id=org.ppsspp.ppsspp" target="_blank" rel="noopener">📱 PPSSPP di Play Store</a>
+    </div>
+  </section>
+
+</div>
+
+<!-- MODAL: ADD URL -->
+<div class="modal" id="modal-url">
+  <div class="modal-box">
+    <div class="modal-title">🔗 Tambah Game dari URL</div>
+    <div class="form-group">
+      <label>Nama Game</label>
+      <input type="text" id="url-name" placeholder="contoh: Monster Hunter">
+    </div>
+    <div class="form-group">
+      <label>URL ISO/CSO</label>
+      <input type="text" id="url-link" placeholder="https://...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="modal-cancel">Cancel</button>
+      <button class="btn-primary" id="modal-save">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- FPS OVERLAY -->
+<div class="fps-overlay" id="fps-overlay" style="display:none">
+  <span id="fps-value">60</span> FPS
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
